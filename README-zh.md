@@ -1,75 +1,75 @@
-# YouTube Clone Project 🎥
+# YouTube 克隆项目 🎥
 
-A comprehensive guide to building a full-featured YouTube clone application.
+一个构建全功能 YouTube 克隆应用的完整指南。
 
-📺 [Watch the Full Tutorial @CodeWithAntonio](https://www.youtube.com/watch?si=oP2_MMRY_Jc61GSn&v=ArmPzvHTcfQ&feature=youtu.be)
+📺 [观看完整教程 @CodeWithAntonio](https://www.youtube.com/watch?si=oP2_MMRY_Jc61GSn&v=ArmPzvHTcfQ&feature=youtu.be)
 
-## Key Features 🚀
+## 核心功能 🚀
 
-### Video Management
+### 视频管理
 
-- 🎬 Video infrastructure & storage (powered by MuxHQ)
-- 📝 Automatic video transcription
-- 🖼️ Smart thumbnail generation
-- 🤖 AI-powered background jobs (using Upstash)
+- 🎬 视频基础设施和存储（由 MuxHQ 提供支持）
+- 📝 自动视频转录
+- 🖼️ 智能缩略图生成
+- 🤖 AI 驱动的后台任务（使用 Upstash）
 
-### User Features
+### 用户功能
 
-- 📊 Creator Studio with analytics
-- 🗂️ Playlist management system
-- 💬 Interactive comments
-- 👍 Like and subscription system
-- 🎯 Watch history tracking
-- 🔐 User authentication (powered by Clerk)
+- 📊 创作者工作室及数据分析
+- 🗂️ 播放列表管理系统
+- 💬 互动评论
+- 👍 点赞和订阅系统
+- 🎯 观看历史记录
+- 🔐 用户认证（由 Clerk 提供支持）
 
-### Technical Stack 💻
+### 技术栈 💻
 
-#### Core Technologies
+#### 核心技术
 
 - 🚀 Next.js 15
 - ⚛️ React 19
-- 🔄 tRPC for type-safe APIs
+- 🔄 tRPC（类型安全的 API）
 
-#### Database & Storage
+#### 数据库和存储
 
-- 🗄️ PostgreSQL (Neon Database)
+- 🗄️ PostgreSQL（Neon 数据库）
 - 🔍 DrizzleORM
 
-#### UI/UX
+#### 用户界面
 
 - 💅 TailwindCSS
 - 🎨 shadcn/ui
-- 📱 Responsive design
+- 📱 响应式设计
 
-# Setup ⚙️
+# 环境搭建 ⚙️
 
-- Configure environment
+- 配置环境
 
-  - runtime (Node.js, Bun)
-  - package manager (npm, pnpm, bun)
+  - 运行时（Node.js, Bun）
+  - 包管理器（npm, pnpm, bun）
 
-- Why Bun?
-  - Easily run TypeScript scripts with ES6 imports
-  - Less issues with dependency issues regarding React 19
-  - Establish basic Bun commands
+- 为什么选择 Bun？
+  - 轻松运行带有 ES6 导入的 TypeScript 脚本
+  - 减少与 React 19 相关的依赖问题
+  - 基本 Bun 命令说明
     - bun add === npm install
     - bunx === npx
 
-# Database setup 🌵
+# 数据库设置 🌵
 
-- Create a Postgres database([neon](https://www.neon.tech))
-- Setup Drizzle ORM
-- Create users schema
-- Migrate changes to database
-- Learn how to use drizzle-kit
+- 创建 Postgres 数据库（[neon](https://www.neon.tech)）
+- 配置 Drizzle ORM
+- 创建用户数据模型
+- 迁移数据库变更
+- 学习使用 drizzle-kit
 
-## Why Drizzle ORM?
+## 为什么选择 Drizzle ORM？
 
-- Only ORM with both relational and SQL-Like query APIs
-- Serverless by default
-- Forcing us to 'understand' our queries
+- 唯一同时支持关系型和类 SQL 查询 API 的 ORM
+- 默认支持 Serverless
+- 促使我们更好地理解查询
 
-### Prisma-like querying
+### Prisma 风格的查询
 
 ```javascript
 const result = await db.query.users.findMany({
@@ -79,7 +79,7 @@ const result = await db.query.users.findMany({
 });
 ```
 
-### SQL-like querying
+### SQL 风格的查询
 
 ```javascript
 const result = await db
@@ -89,23 +89,23 @@ const result = await db
   .where(eq(cities.id, 1));
 ```
 
-# Webhook sync 🌈
+# Webhook 同步 🌈
 
-- Create ngrok account (or any other local tunnel solution)
-- Obtain a static domain
-- Add script to concurrently run local tunnel & app
-- Create the users webhook
-- Connect the webhook on Clerk dashboard
+- 创建 ngrok 账号（或其他本地隧道方案）
+- 获取静态域名
+- 添加脚本以同时运行本地隧道和应用
+- 创建用户 webhook
+- 在 Clerk 仪表板中连接 webhook
 
-# tRpc setup 🥥
+# tRPC 设置 🥥
 
-## Why tRpc?
+## 为什么选择 tRPC？
 
-- end-to-end typesafety
-- familiar hooks(useQuery, useMutation, useInfiniteQuery)
-- v11 allows us to do authenticated prefetching
+- 端到端类型安全
+- 熟悉的 hooks（useQuery, useMutation, useInfiniteQuery）
+- v11 支持认证预获取
 
-## Why not X (Hono.js)?
+## 为什么不选择其他框架（如 Hono.js）？
 
 - 不能预取认证查询(prefetch authenticated queries)
 
