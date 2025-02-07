@@ -1,4 +1,4 @@
-# Setup
+# Setup ⚙️
 
 - Configure environment
 
@@ -45,3 +45,11 @@ const result = await db
   .leftJoin(cities, eq(cities.countryId, countries.id))
   .where(eq(cities.id, 1));
 ```
+
+# Webhook sync 🌈
+
+- Create ngrok account (or any other local tunnel solution)
+- Obtain a static domain
+- Add script to concurrently run local tunnel & app
+- Create the users webhook
+- Connect the webhook on Clerk dashboard
