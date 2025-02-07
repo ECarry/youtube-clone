@@ -104,3 +104,141 @@ const result = await db
 - end-to-end typesafety
 - familiar hooks(useQuery, useMutation, useInfiniteQuery)
 - v11 allows us to do authenticated prefetching
+
+### Why not X (Hono.js)?
+
+- not possible to prefetch authenticated queries
+
+The main limitation of Hono.js in this context is the inability to prefetch authenticated queries. Here's why this matters:
+
+#### Authentication State Handling
+
+```typescript
+// tRPC approach
+// Server components can directly access auth state
+async function ProtectedPage() {
+  // Can prefetch authenticated data directly on the server
+  const userData = await trpc.auth.getUser.prefetch();
+  return <Component data={userData} />;
+}
+
+// Hono + React Query approach
+// ❌ Can't use in server components
+("use client");
+function ProtectedPage() {
+  // Auth queries can only happen on the client
+  const { data } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => client.getUser(),
+  });
+}
+```
+
+#### Impact on Performance
+
+- Additional network roundtrips required
+- Waterfall data loading pattern
+- Increased time to first meaningful paint
+- Loading flickers and content delays
+
+### Why prefetch?
+
+#### 1. "Render as you fetch" concept
+
+Modern data fetching pattern that starts loading data before rendering:
+
+```typescript
+// Traditional way (fetch-on-render)
+function OldComponent() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    // ❌ Only starts fetching after render
+    fetchData().then(setData);
+  }, []);
+}
+
+// Render as you fetch (with tRPC)
+async function NewComponent() {
+  // ✅ Start fetching immediately
+  const dataPromise = trpc.data.query.prefetch();
+
+  return (
+    <Suspense fallback={<Loading />}>
+      <AsyncContent promise={dataPromise} />
+    </Suspense>
+  );
+}
+```
+
+#### 2. Leverage RSCs as "loaders"
+
+React Server Components act as efficient data loaders:
+
+```typescript
+// Server Component as data loader
+async function BlogPostLoader({ id }: { id: string }) {
+  // ✅ Load data directly on the server
+  const post = await trpc.posts.getPost.fetch({ id });
+  const comments = await trpc.comments.list.fetch({ postId: id });
+
+  return (
+    <article>
+      <PostContent post={post} />
+      <Suspense fallback={<CommentsSkeleton />}>
+        <Comments initialData={comments} />
+      </Suspense>
+    </article>
+  );
+}
+```
+
+#### 3. Faster Load Time & 4. Parallel Data Loading
+
+Achieve optimal performance through parallel data fetching:
+
+```typescript
+async function DashboardPage() {
+  // ✅ Fetch multiple data sources in parallel
+  const [userData, posts, analytics, notifications] = await Promise.all([
+    trpc.users.getProfile.prefetch(),
+    trpc.posts.list.prefetch(),
+    trpc.analytics.summary.prefetch(),
+    trpc.notifications.recent.prefetch(),
+  ]);
+
+  return (
+    <Layout>
+      <UserProfile data={userData} />
+      <RecentPosts posts={posts} />
+      <AnalyticsDashboard data={analytics} />
+      <NotificationPanel notifications={notifications} />
+    </Layout>
+  );
+}
+```
+
+### Benefits
+
+1. **Performance**
+
+   - Reduced total loading time
+   - Avoided serial requests
+   - Optimized first paint
+
+2. **User Experience**
+
+   - Progressive loading
+   - Faster interaction response
+   - Smoother page transitions
+
+3. **Developer Experience**
+
+   - Declarative data fetching
+   - Type safety
+   - Simplified error handling
+
+4. **Resource Utilization**
+   - Reduced server load
+   - Optimized bandwidth usage
+   - Better cache utilization
