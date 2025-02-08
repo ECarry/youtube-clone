@@ -97,9 +97,9 @@ const result = await db
 - Create the users webhook
 - Connect the webhook on Clerk dashboard
 
-# tRpc setup 🥥
+# tRPC setup 🥥
 
-## Why tRpc?
+## Why tRPC?
 
 - end-to-end typesafety
 - familiar hooks(useQuery, useMutation, useInfiniteQuery)
@@ -242,3 +242,10 @@ async function DashboardPage() {
    - Reduced server load
    - Optimized bandwidth usage
    - Better cache utilization
+
+# tRPC configuration
+
+- Enable transformer on tRPC
+- Add auth to tRPC context
+- Add protected procedure
+- Add rate limiting
