@@ -1,4 +1,4 @@
-import { HomeLayout } from "@/modules/home/ui/home-layout";
+import { HomeLayout } from "@/modules/home/ui/layouts/home-layout";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return <HomeLayout>{children}</HomeLayout>;

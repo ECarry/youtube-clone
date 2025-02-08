@@ -249,3 +249,11 @@ async function DashboardPage() {
 - Add auth to tRPC context
 - Add protected procedure
 - Add rate limiting
+
+# Video categories
+
+- Create categories schema
+- Push changes to the database
+- Seed categories
+- Prefetch categories
+- Create categories component
