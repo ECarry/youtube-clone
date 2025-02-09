@@ -257,3 +257,9 @@ async function DashboardPage() {
 - Seed categories
 - Prefetch categories
 - Create categories component
+
+# Studio layout
+
+- Create studio route group
+- Create studio layout
+- Procect studio routes
