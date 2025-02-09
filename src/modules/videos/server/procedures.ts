@@ -9,9 +9,7 @@ export const videosRouter = createTRPCRouter({
     const [video] = await db
       .insert(videos)
       .values({
-        title: "23",
-        description: "",
-        url: "yyjhh",
+        title: "title",
         userId,
       })
       .returning();
