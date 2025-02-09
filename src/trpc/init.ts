@@ -12,7 +12,6 @@ export const createTRPCContext = cache(async () => {
    * @see: https://trpc.io/docs/server/context
    */
   const { userId } = await auth();
-  console.log({ userId });
 
   return { clerkUserId: userId };
 });
