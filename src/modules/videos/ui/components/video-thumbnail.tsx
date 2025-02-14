@@ -1,5 +1,6 @@
 import { formatDuration } from "@/lib/utils";
 import Image from "next/image";
+import { THUMBNAIL_FALLBACK } from "../../constants";
 
 interface VideoThumbnailProps {
   imageUrl?: string | null;
@@ -19,14 +20,14 @@ export const VideoThumbnail = ({
       {/* Thumbnail wrapper  */}
       <div className="relative w-full overflow-hidden transition-all rounded-xl aspect-video">
         <Image
-          src={imageUrl || "/placeholder.svg"}
+          src={imageUrl || THUMBNAIL_FALLBACK}
           alt={title}
           fill
           className="object-cover size-full group-hover:opacity-0"
         />
         <Image
           unoptimized={!!previewUrl}
-          src={previewUrl || "/placeholder.svg"}
+          src={previewUrl || THUMBNAIL_FALLBACK}
           alt={title}
           fill
           className="object-cover size-full opacity-0 group-hover:opacity-100"
