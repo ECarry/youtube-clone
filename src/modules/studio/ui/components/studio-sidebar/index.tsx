@@ -31,10 +31,7 @@ export const StudioSidebar = () => {
                   isActive={pathname === "/studio"}
                   asChild
                 >
-                  <Link
-                    href="/studio/content"
-                    className="flex items-center gap-4"
-                  >
+                  <Link href="/studio" className="flex items-center gap-4">
                     <VideoIcon className="size-4" />
                     <span className="text-sm">Content</span>
                   </Link>
