@@ -262,4 +262,12 @@ async function DashboardPage() {
 
 - Create studio route group
 - Create studio layout
-- Procect studio routes
+- Protect studio routes
+
+## AI background jobs
+
+why background jobs?
+
+- avoid timeout from long-running tasks
+  - problematic with AI generations
+- ensure retries in case of failure
