@@ -86,9 +86,10 @@ export const POST = async (req: Request) => {
         return new Response("Failed to upload files.", { status: 500 });
       }
 
-      const { key: thumbnailKey, url: thumbnailUrl } = uploadThumbnailUrl.data;
+      const { key: thumbnailKey, ufsUrl: thumbnailUrl } =
+        uploadThumbnailUrl.data;
 
-      const { key: previewKey, url: previewUrl } = uploadPreviewUrl.data;
+      const { key: previewKey, ufsUrl: previewUrl } = uploadPreviewUrl.data;
 
       await db
         .update(videos)

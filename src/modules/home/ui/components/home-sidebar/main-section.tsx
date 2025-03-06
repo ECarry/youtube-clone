@@ -7,10 +7,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useAuth, useClerk } from "@clerk/nextjs";
+import { useSession } from "@/modules/auth/lib/auth-client";
+
 import { FlameIcon, HomeIcon, PlaySquareIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const items = [
   {
@@ -32,9 +33,9 @@ const items = [
 ];
 
 export const MainSection = () => {
+  const router = useRouter();
   const pathname = usePathname();
-  const clerk = useClerk();
-  const { isSignedIn } = useAuth();
+  const { data: session } = useSession();
 
   return (
     <SidebarGroup>
@@ -47,9 +48,9 @@ export const MainSection = () => {
                 asChild
                 isActive={pathname === item.url}
                 onClick={(e) => {
-                  if (!isSignedIn && item.auth) {
+                  if (!session) {
                     e.preventDefault();
-                    return clerk.openSignIn();
+                    return router.push("/sign-in");
                   }
                 }}
               >

@@ -1,7 +1,8 @@
 import { db } from "@/db";
-import { users, videos } from "@/db/schema";
-import { auth } from "@clerk/nextjs/server";
+import { user, videos } from "@/db/schema";
+import { auth } from "@/modules/auth/lib/auth";
 import { and, eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError, UTApi } from "uploadthing/server";
 import { z } from "zod";
@@ -17,21 +18,27 @@ export const ourFileRouter = {
   })
     .input(z.object({ videoId: z.string().uuid() }))
     .middleware(async ({ input }) => {
-      const { userId: clerkUserId } = await auth();
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
 
-      if (!clerkUserId) throw new UploadThingError("Unauthorized");
+      const userId = session?.user?.id;
 
-      const [user] = await db
+      if (!userId) throw new UploadThingError("Unauthorized");
+
+      const [existingUser] = await db
         .select()
-        .from(users)
-        .where(eq(users.clerkId, clerkUserId));
+        .from(user)
+        .where(eq(user.id, userId));
 
-      if (!user) throw new UploadThingError("Unauthorized");
+      if (!existingUser) throw new UploadThingError("Unauthorized");
 
       const [existingVideo] = await db
         .select({ thumbnailKey: videos.thumbnailKey })
         .from(videos)
-        .where(and(eq(videos.id, input.videoId), eq(videos.userId, user.id)));
+        .where(
+          and(eq(videos.id, input.videoId), eq(videos.userId, existingUser.id))
+        );
 
       if (!existingVideo) throw new UploadThingError("Not found");
 
@@ -43,16 +50,21 @@ export const ourFileRouter = {
         await db
           .update(videos)
           .set({ thumbnailKey: null })
-          .where(and(eq(videos.id, input.videoId), eq(videos.userId, user.id)));
+          .where(
+            and(
+              eq(videos.id, input.videoId),
+              eq(videos.userId, existingUser.id)
+            )
+          );
       }
 
-      return { user, ...input };
+      return { user: existingUser, ...input };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       await db
         .update(videos)
         .set({
-          thumbnailUrl: file.url,
+          thumbnailUrl: file.ufsUrl,
           thumbnailKey: file.key,
         })
         .where(

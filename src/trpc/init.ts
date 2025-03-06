@@ -1,19 +1,26 @@
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
-import { users } from "@/db/schema";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/modules/auth/lib/auth";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { cache } from "react";
 import superjson from "superjson";
 import { ratelimit } from "@/lib/ratelimit";
+import { headers } from "next/headers";
+// Types
+import type { Session } from "@/modules/auth/lib/auth-types";
+import { user } from "@/db/schema";
 
 export const createTRPCContext = cache(async () => {
   /**
    * @see: https://trpc.io/docs/server/context
    */
-  const { userId } = await auth();
+  const session: Session | null = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  return { clerkUserId: userId };
+  const userId = session?.user.id ?? null;
+
+  return { userId };
 });
 
 export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
@@ -36,21 +43,21 @@ export const protectedProcedure = t.procedure.use(async function isAuthed(
 ) {
   const { ctx } = opts;
 
-  if (!ctx.clerkUserId) {
+  if (!ctx.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const [user] = await db
+  const [existingUser] = await db
     .select()
-    .from(users)
-    .where(eq(users.clerkId, ctx.clerkUserId))
+    .from(user)
+    .where(eq(user.id, ctx.userId))
     .limit(1);
 
-  if (!user) {
+  if (!existingUser) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const { success } = await ratelimit.limit(user.id);
+  const { success } = await ratelimit.limit(existingUser.id);
 
   if (!success) {
     throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
@@ -59,7 +66,7 @@ export const protectedProcedure = t.procedure.use(async function isAuthed(
   return opts.next({
     ctx: {
       ...ctx,
-      user,
+      user: existingUser,
     },
   });
 });
