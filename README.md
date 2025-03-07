@@ -20,7 +20,7 @@ A comprehensive guide to building a full-featured YouTube clone application.
 - 💬 Interactive comments
 - 👍 Like and subscription system
 - 🎯 Watch history tracking
-- 🔐 User authentication (powered by Clerk)
+- 🔐 User authentication (powered by Better Auth)
 
 ### Technical Stack 💻
 
@@ -95,7 +95,6 @@ const result = await db
 - Obtain a static domain
 - Add script to concurrently run local tunnel & app
 - Create the users webhook
-- Connect the webhook on Clerk dashboard
 
 # tRPC setup 🥥
 
