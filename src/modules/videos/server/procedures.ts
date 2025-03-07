@@ -1,14 +1,40 @@
 import { db } from "@/db";
-import { videos, videosUpdateSchema } from "@/db/schema";
+import { user, videos, videosUpdateSchema } from "@/db/schema";
 import { mux } from "@/lib/mux";
 import { workflow } from "@/lib/workflow";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import {
+  baseProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, getTableColumns } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 
 export const videosRouter = createTRPCRouter({
+  getOne: baseProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ input }) => {
+      const { id } = input;
+
+      const [video] = await db
+        .select({
+          ...getTableColumns(videos),
+          user: {
+            ...getTableColumns(user),
+          },
+        })
+        .from(videos)
+        .innerJoin(user, eq(videos.userId, user.id))
+        .where(eq(videos.id, id));
+
+      if (!video) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return video;
+    }),
   generateTitle: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
@@ -85,7 +111,7 @@ export const videosRouter = createTRPCRouter({
       if (!uploadThumbnail.data)
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-      const { key: thumbnailKey, url: thumbnailUrl } = uploadThumbnail.data;
+      const { key: thumbnailKey, ufsUrl: thumbnailUrl } = uploadThumbnail.data;
 
       const [updatedVideo] = await db
         .update(videos)
