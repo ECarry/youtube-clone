@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { VideoGetOneOutPut } from "../../types";
 import { UserAvatar } from "@/components/user-avatar";
-import { useSession } from "@/modules/auth/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscription-button";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
+import useUserId from "@/hooks/use-user-id";
 
 interface Props {
   user: VideoGetOneOutPut["user"];
@@ -12,8 +12,8 @@ interface Props {
 }
 
 export const VideoOwner = ({ user, videoId }: Props) => {
-  const { data: session } = useSession();
-  const isOwner = session?.user?.id === user.id;
+  const userId = useUserId();
+  const isOwner = userId === user.id;
 
   return (
     <div className="flex items-center sm:items-start justify-between sm:justify-start gap-3 min-w-0">
@@ -27,7 +27,7 @@ export const VideoOwner = ({ user, videoId }: Props) => {
           <div className="flex flex-col gap-1 min-w-0">
             <UserInfo name={user.name} size="lg" />
             <span className="text-sm text-muted-foreground line-clamp-1">
-              {0} subscribers
+              {user.subscriberCount} subscribers
             </span>
           </div>
         </div>
