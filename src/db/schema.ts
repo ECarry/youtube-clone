@@ -66,7 +66,7 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updated_at"),
 });
 
-export const usersRelations = relations(user, ({ many }) => ({
+export const userRelations = relations(user, ({ many }) => ({
   videos: many(videos),
   videoViews: many(videoViews),
   videoReactions: many(videoReactions),
@@ -76,6 +76,7 @@ export const usersRelations = relations(user, ({ many }) => ({
   subscribers: many(subscriptions, {
     relationName: "subscriptions_creator_id_fkey",
   }),
+  comments: many(comments),
 }));
 
 export const subscriptions = pgTable(
@@ -99,12 +100,12 @@ export const subscriptions = pgTable(
 );
 
 export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
-  viewerId: one(user, {
+  viewer: one(user, {
     fields: [subscriptions.viewerId],
     references: [user.id],
     relationName: "subscriptions_viewer_id_fkey",
   }),
-  creatorId: one(user, {
+  creator: one(user, {
     fields: [subscriptions.creatorId],
     references: [user.id],
     relationName: "subscriptions_creator_id_fkey",
@@ -178,6 +179,33 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
   }),
   views: many(videoViews),
   reactions: many(videoReactions),
+  comments: many(comments),
+}));
+
+export const comments = pgTable("comments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  videoId: uuid("video_id")
+    .references(() => videos.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  userId: text("user_id")
+    .references(() => user.id, { onDelete: "cascade" })
+    .notNull(),
+  value: text("value").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const commentRelations = relations(comments, ({ one }) => ({
+  video: one(videos, {
+    fields: [comments.videoId],
+    references: [videos.id],
+  }),
+  user: one(user, {
+    fields: [comments.userId],
+    references: [user.id],
+  }),
 }));
 
 export const videoViews = pgTable(
