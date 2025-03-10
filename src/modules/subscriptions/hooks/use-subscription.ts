@@ -21,12 +21,28 @@ export const useSubscription = ({
         utils.videos.getOne.invalidate({ id: fromVideoId });
       }
     },
+    onError: (error) => {
+      toast.error(error.message);
+
+      if (error.data?.code === "UNAUTHORIZED") {
+        toast.error("You need to be logged in to subscribe");
+        return;
+      }
+    },
   });
   const unsubscribe = trpc.subscriptions.remove.useMutation({
     onSuccess: () => {
       toast.success("Unsubscribed");
       if (fromVideoId) {
         utils.videos.getOne.invalidate({ id: fromVideoId });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+
+      if (error.data?.code === "UNAUTHORIZED") {
+        toast.error("You need to be logged in to unsubscribe");
+        return;
       }
     },
   });

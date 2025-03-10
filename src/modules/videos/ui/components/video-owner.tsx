@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscription-button";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
 import useUserId from "@/hooks/use-user-id";
+import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
 
 interface Props {
   user: VideoGetOneOutPut["user"];
@@ -14,6 +15,12 @@ interface Props {
 export const VideoOwner = ({ user, videoId }: Props) => {
   const userId = useUserId();
   const isOwner = userId === user.id;
+
+  const { isPending, onClick } = useSubscription({
+    userId: user.id,
+    isSubscribed: user.viewerSubscribed,
+    fromVideoId: videoId,
+  });
 
   return (
     <div className="flex items-center sm:items-start justify-between sm:justify-start gap-3 min-w-0">
@@ -38,9 +45,9 @@ export const VideoOwner = ({ user, videoId }: Props) => {
         </Button>
       ) : (
         <SubscriptionButton
-          onClick={() => {}}
-          disabled={false}
-          isSubscribed={false}
+          onClick={onClick}
+          disabled={isPending}
+          isSubscribed={user.viewerSubscribed}
           className="flex-none"
         />
       )}

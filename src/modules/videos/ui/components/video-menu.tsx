@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ListPlus, MoreHorizontal, ShareIcon, Trash2Icon } from "lucide-react";
+import { ListPlus, MoreVertical, ShareIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 
 interface Props {
@@ -27,7 +27,7 @@ export const VideoMenu = ({ videoId, variant, onRemove }: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size="icon" className="rounded-full">
-          <MoreHorizontal />
+          <MoreVertical />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
