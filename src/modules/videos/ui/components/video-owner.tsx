@@ -4,7 +4,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { Button } from "@/components/ui/button";
 import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscription-button";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
-import useUserId from "@/hooks/use-user-id";
+import useUser from "@/hooks/use-user";
 import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const VideoOwner = ({ user, videoId }: Props) => {
-  const userId = useUserId();
+  const { userId } = useUser();
   const isOwner = userId === user.id;
 
   const { isPending, onClick } = useSubscription({

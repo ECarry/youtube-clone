@@ -7,7 +7,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { VideoPlayer } from "../components/video-player";
 import { VideoBanner } from "../components/video-banner";
 import { VideoTopRow } from "../components/video-top-row";
-import useUserId from "@/hooks/use-user-id";
+import useUser from "@/hooks/use-user";
 
 interface Props {
   videoId: string;
@@ -24,7 +24,7 @@ export const VideoSection = ({ videoId }: Props) => {
 };
 
 const VideoSectionSuspense = ({ videoId }: Props) => {
-  const userId = useUserId();
+  const { userId } = useUser();
 
   const utils = trpc.useUtils();
   const [video] = trpc.videos.getOne.useSuspenseQuery({ id: videoId });
