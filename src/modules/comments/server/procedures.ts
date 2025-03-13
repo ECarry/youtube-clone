@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { comments } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { comments, user } from "@/db/schema";
+import { eq, getTableColumns } from "drizzle-orm";
 import {
   baseProcedure,
   createTRPCRouter,
@@ -41,9 +41,13 @@ export const commentsRouter = createTRPCRouter({
       const { videoId } = input;
 
       const data = await db
-        .select()
+        .select({
+          ...getTableColumns(comments),
+          user,
+        })
         .from(comments)
-        .where(eq(comments.videoId, videoId));
+        .where(eq(comments.videoId, videoId))
+        .innerJoin(user, eq(comments.userId, user.id));
 
       return data;
     }),
