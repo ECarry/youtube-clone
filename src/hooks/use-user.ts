@@ -4,7 +4,7 @@ const useUser = () => {
   const { data: session } = useSession();
 
   return {
-    userId: session?.session.id,
+    userId: session?.session.userId,
     user: session?.user,
   };
 };

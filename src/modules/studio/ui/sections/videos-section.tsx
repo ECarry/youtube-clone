@@ -4,7 +4,7 @@ import { trpc } from "@/trpc/client";
 import { DEFAULT_LIMIT } from "@/constants";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { InfinitScroll } from "@/components/infinit-scroll";
+import { InfiniteScroll } from "@/components/infinite-scroll";
 import {
   Table,
   TableBody,
@@ -167,7 +167,7 @@ const VideosSectionSuspense = () => {
         </TableBody>
       </Table>
 
-      <InfinitScroll
+      <InfiniteScroll
         hasNextPage={query.hasNextPage}
         fetchNextPage={query.fetchNextPage}
         isFetchingNextPage={query.isFetchingNextPage}
