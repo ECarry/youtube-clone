@@ -10,9 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, MoreVertical, Trash } from "lucide-react";
+import {
+  MessageSquare,
+  MoreVertical,
+  ThumbsDown,
+  ThumbsUp,
+  Trash,
+} from "lucide-react";
 import { toast } from "sonner";
 import useUser from "@/hooks/use-user";
+import { cn } from "@/lib/utils";
 
 interface CommentItemProps {
   comment: CommentsGetManyOutPut["items"][number];
@@ -30,6 +37,28 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
     },
     onError: () => {
       toast.error("Failed to delete comment");
+    },
+  });
+
+  const like = trpc.commentReactions.like.useMutation({
+    onSuccess: () => {
+      utils.comments.getMany.invalidate({
+        videoId: comment.videoId,
+      });
+    },
+    onError: () => {
+      toast.error("Failed to like comment");
+    },
+  });
+
+  const dislike = trpc.commentReactions.dislike.useMutation({
+    onSuccess: () => {
+      utils.comments.getMany.invalidate({
+        videoId: comment.videoId,
+      });
+    },
+    onError: () => {
+      toast.error("Failed to dislike comment");
     },
   });
 
@@ -56,8 +85,44 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
             </div>
           </Link>
           <p className="text-sm">{comment.value}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center">
+              <Button
+                disabled={like.isPending || dislike.isPending}
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                onClick={() => like.mutate({ commentId: comment.id })}
+              >
+                <ThumbsUp
+                  className={cn(
+                    comment.viewerReactions === "like" && "fill-black"
+                  )}
+                />
+              </Button>
+              <span className="text-xs text-muted-foreground">
+                {comment.likeCount}
+              </span>
+              <Button
+                disabled={dislike.isPending || like.isPending}
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                onClick={() => dislike.mutate({ commentId: comment.id })}
+              >
+                <ThumbsDown
+                  className={cn(
+                    comment.viewerReactions === "dislike" && "fill-black"
+                  )}
+                />
+              </Button>
+              <span className="text-xs text-muted-foreground">
+                {comment.dislikeCount}
+              </span>
+            </div>
+          </div>
         </div>
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="size-8">
               <MoreVertical />

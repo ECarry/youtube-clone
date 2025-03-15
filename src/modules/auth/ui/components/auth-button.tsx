@@ -37,7 +37,7 @@ const AuthButton = () => {
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Avatar className="size-9 hover:opacity-80 transition-opacity cursor-pointer">
           <AvatarImage
