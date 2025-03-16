@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { VideoGetOneOutPut } from "../../types";
 import { UserAvatar } from "@/components/user-avatar";
@@ -6,6 +8,7 @@ import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscr
 import { UserInfo } from "@/modules/users/ui/components/user-info";
 import useUser from "@/hooks/use-user";
 import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
+import { useEffect, useState } from "react";
 
 interface Props {
   user: VideoGetOneOutPut["user"];
@@ -15,12 +18,18 @@ interface Props {
 export const VideoOwner = ({ user, videoId }: Props) => {
   const { userId } = useUser();
   const isOwner = userId === user.id;
+  const [mounted, setMounted] = useState(false);
 
   const { isPending, onClick } = useSubscription({
     userId: user.id,
     isSubscribed: user.viewerSubscribed,
     fromVideoId: videoId,
   });
+
+  // Only show the client-side rendered content after hydration is complete
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex items-center sm:items-start justify-between sm:justify-start gap-3 min-w-0">
@@ -39,17 +48,22 @@ export const VideoOwner = ({ user, videoId }: Props) => {
           </div>
         </div>
       </Link>
-      {isOwner ? (
-        <Button variant="secondary" className="rounded-full" asChild>
-          <Link href={`/studio/videos/${videoId}`}>Edit video</Link>
-        </Button>
+      {mounted ? (
+        isOwner ? (
+          <Button variant="secondary" className="rounded-full" asChild>
+            <Link href={`/studio/videos/${videoId}`}>Edit video</Link>
+          </Button>
+        ) : (
+          <SubscriptionButton
+            onClick={onClick}
+            disabled={isPending}
+            isSubscribed={user.viewerSubscribed}
+            className="flex-none"
+          />
+        )
       ) : (
-        <SubscriptionButton
-          onClick={onClick}
-          disabled={isPending}
-          isSubscribed={user.viewerSubscribed}
-          className="flex-none"
-        />
+        // Placeholder with roughly the same dimensions
+        <div className="h-9 w-24" />
       )}
     </div>
   );

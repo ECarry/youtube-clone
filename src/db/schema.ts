@@ -9,6 +9,7 @@ import {
   uuid,
   boolean,
   primaryKey,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
@@ -185,20 +186,32 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
   comments: many(comments),
 }));
 
-export const comments = pgTable("comments", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  videoId: uuid("video_id")
-    .references(() => videos.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  userId: text("user_id")
-    .references(() => user.id, { onDelete: "cascade" })
-    .notNull(),
-  value: text("value").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const comments = pgTable(
+  "comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // https://orm.drizzle.team/docs/indexes-constraints#foreign-key
+    parentId: uuid("parent_id"),
+    videoId: uuid("video_id")
+      .references(() => videos.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    userId: text("user_id")
+      .references(() => user.id, { onDelete: "cascade" })
+      .notNull(),
+    value: text("value").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    foreignKey({
+      columns: [t.parentId],
+      foreignColumns: [t.id],
+      name: "comments_parent_id_fkey",
+    }).onDelete("cascade"),
+  ]
+);
 
 export const commentRelations = relations(comments, ({ one, many }) => ({
   video: one(videos, {
@@ -209,7 +222,15 @@ export const commentRelations = relations(comments, ({ one, many }) => ({
     fields: [comments.userId],
     references: [user.id],
   }),
+  parentId: one(comments, {
+    fields: [comments.parentId],
+    references: [comments.id],
+    relationName: "comments_parent_id_fkey",
+  }),
   reactions: many(commentsReactions),
+  replies: many(comments, {
+    relationName: "comments_replies_fkey",
+  }),
 }));
 
 export const commentsInsertSchema = createInsertSchema(comments);
