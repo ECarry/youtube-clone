@@ -11,6 +11,10 @@ interface Props {
 const page = async ({ params }: Props) => {
   const videoId = (await params).videoId;
   void trpc.videos.getOne.prefetch({ id: videoId });
+  void trpc.suggestions.getMany.prefetchInfinite({
+    videoId,
+    limit: DEFAULT_LIMIT,
+  });
   void trpc.comments.getMany.prefetchInfinite({
     videoId,
     limit: DEFAULT_LIMIT,

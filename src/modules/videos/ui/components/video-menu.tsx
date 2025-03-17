@@ -14,7 +14,7 @@ interface Props {
   onRemove?: () => void;
 }
 
-export const VideoMenu = ({ videoId, variant, onRemove }: Props) => {
+export const VideoMenu = ({ videoId, variant = "ghost", onRemove }: Props) => {
   const onShare = () => {
     const fullUrl = `${
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
