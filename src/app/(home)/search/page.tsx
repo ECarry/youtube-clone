@@ -5,14 +5,14 @@ import { HydrateClient, trpc } from "@/trpc/server";
 export const dynamic = "force-dynamic";
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     query: string | undefined;
     categoryId: string | undefined;
-  };
+  }>;
 }
 
-const SearchPage = ({ searchParams }: Props) => {
-  const { query, categoryId } = searchParams;
+const SearchPage = async ({ searchParams }: Props) => {
+  const { query, categoryId } = await searchParams;
 
   void trpc.categories.getMany.prefetch();
   void trpc.search.getMany.prefetchInfinite({
