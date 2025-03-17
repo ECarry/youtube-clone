@@ -5,6 +5,9 @@ import { trpc } from "@/trpc/client";
 import { VideoRowCard } from "../components/video-row-card";
 import { VideoGridCard } from "../components/video-grid-card";
 import { InfiniteScroll } from "@/components/infinite-scroll";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface Props {
   videoId: string;
@@ -12,6 +15,16 @@ interface Props {
 }
 
 export const SuggestionsSection = ({ videoId, isManual }: Props) => {
+  return (
+    <Suspense fallback={<Skeleton className="h-[200px]" />}>
+      <ErrorBoundary fallback={<p>Something went wrong</p>}>
+        <SuggestionsSectionSuspense videoId={videoId} isManual={isManual} />
+      </ErrorBoundary>
+    </Suspense>
+  );
+};
+
+const SuggestionsSectionSuspense = ({ videoId, isManual }: Props) => {
   const [suggestions, query] =
     trpc.suggestions.getMany.useSuspenseInfiniteQuery(
       {
