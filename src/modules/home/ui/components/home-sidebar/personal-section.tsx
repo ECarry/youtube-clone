@@ -17,7 +17,7 @@ import { usePathname, useRouter } from "next/navigation";
 const items = [
   {
     title: "History",
-    url: "/History",
+    url: "/playlists/history",
     icon: HistoryIcon,
     auth: true,
   },
