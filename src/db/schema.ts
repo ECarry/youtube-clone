@@ -81,6 +81,7 @@ export const userRelations = relations(user, ({ many }) => ({
   }),
   comments: many(comments),
   commentsReactions: many(commentsReactions),
+  playlists: many(playlists),
 }));
 
 export const subscriptions = pgTable(
@@ -184,6 +185,7 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
   views: many(videoViews),
   reactions: many(videoReactions),
   comments: many(comments),
+  playlistVideos: many(playlistVideos),
 }));
 
 export const comments = pgTable(
@@ -346,3 +348,61 @@ export const videoReactionsRelations = relations(videoReactions, ({ one }) => ({
 export const videoReactionsInsertSchema = createInsertSchema(videoReactions);
 export const videoReactionsSelectSchema = createSelectSchema(videoReactions);
 export const videoReactionsUpdateSchema = createUpdateSchema(videoReactions);
+
+export const playlistVideos = pgTable(
+  "playlist_videos",
+  {
+    playlistId: uuid("playlist_id")
+      .references(() => playlists.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    videoId: uuid("video_id")
+      .references(() => videos.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    primaryKey({
+      name: "playlist_videos_pk",
+      columns: [t.playlistId, t.videoId],
+    }),
+  ]
+);
+
+export const playlistVideosRelations = relations(playlistVideos, ({ one }) => ({
+  playlist: one(playlists, {
+    fields: [playlistVideos.playlistId],
+    references: [playlists.id],
+  }),
+  video: one(videos, {
+    fields: [playlistVideos.videoId],
+    references: [videos.id],
+  }),
+}));
+
+export const playlists = pgTable("playlists", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  userId: text("user_id")
+    .references(() => user.id, { onDelete: "cascade" })
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const playlistsRelations = relations(playlists, ({ one, many }) => ({
+  user: one(user, {
+    fields: [playlists.userId],
+    references: [user.id],
+  }),
+  playlistVideos: many(playlistVideos),
+}));
+
+export const playlistsInsertSchema = createInsertSchema(playlists);
+export const playlistsSelectSchema = createSelectSchema(playlists);
+export const playlistsUpdateSchema = createUpdateSchema(playlists);
