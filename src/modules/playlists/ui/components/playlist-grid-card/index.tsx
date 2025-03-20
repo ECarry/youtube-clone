@@ -27,7 +27,7 @@ export const PlaylistGridCard = ({ playlist }: Props) => {
         <PlaylistThumbnail
           title={playlist.name}
           videoCount={playlist.videoCount}
-          imageUrl={THUMBNAIL_FALLBACK}
+          imageUrl={playlist.thumbnailUrl || THUMBNAIL_FALLBACK}
         />
         <PlaylistInfo data={playlist} />
       </div>
