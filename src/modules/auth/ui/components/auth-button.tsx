@@ -50,6 +50,19 @@ const AuthButton = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
+          <button
+            className="w-full"
+            onClick={() => router.push(`/users/${session.user.id}`)}
+          >
+            <span className="text-sm">
+              <div className="flex items-center gap-2">
+                <UserCircleIcon className="size-4" />
+                My Profile
+              </div>
+            </span>
+          </button>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <button className="w-full" onClick={() => router.push("/studio")}>
             <span className="text-sm">
               <div className="flex items-center gap-2">
