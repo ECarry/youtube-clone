@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Edit2Icon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
+import { BannerUploadModal } from "./banner-upload-modal";
 
 interface UserPageBannerProps {
   user: UserGetOneOutPut;
@@ -17,6 +18,7 @@ export const UserPageBannerSkeleton = () => {
 export const UserPageBanner = ({ user }: UserPageBannerProps) => {
   const { userId } = useUser();
   const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -24,6 +26,7 @@ export const UserPageBanner = ({ user }: UserPageBannerProps) => {
 
   return (
     <div className="relative group">
+      <BannerUploadModal userId={user.id} open={open} onOpenChange={setOpen} />
       <div
         className={cn(
           "w-full max-h-[200px] h-[15vh] md:h-[25vh] bg-gradient-to-r from-gray-100 to-gray-200",
@@ -40,6 +43,7 @@ export const UserPageBanner = ({ user }: UserPageBannerProps) => {
             size="icon"
             className="absolute top-4 right-4 rounded-full bg-black/50 hover:bg-black/50 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             type="button"
+            onClick={() => setOpen(true)}
           >
             <Edit2Icon className="size-4 text-white" />
           </Button>

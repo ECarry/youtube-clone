@@ -10,6 +10,52 @@ import { z } from "zod";
 const f = createUploadthing();
 
 export const ourFileRouter = {
+  bannerUploader: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+    },
+  })
+    .middleware(async () => {
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
+
+      const userId = session?.user?.id;
+
+      if (!userId) throw new UploadThingError("Unauthorized");
+
+      const [existingUser] = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, userId));
+
+      if (!existingUser) throw new UploadThingError("Unauthorized");
+
+      if (existingUser.bannerKey) {
+        const utapi = new UTApi();
+
+        await utapi.deleteFiles(existingUser.bannerKey);
+
+        await db
+          .update(user)
+          .set({ bannerKey: null, bannerUrl: null })
+          .where(eq(user.id, existingUser.id));
+      }
+
+      return { user: existingUser };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      await db
+        .update(user)
+        .set({
+          bannerUrl: file.ufsUrl,
+          bannerKey: file.key,
+        })
+        .where(eq(user.id, metadata.user.id));
+
+      return { uploadedBy: metadata.user.id };
+    }),
   thumbnailUploader: f({
     image: {
       maxFileSize: "4MB",
