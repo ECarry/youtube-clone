@@ -66,6 +66,7 @@ export const SubscriptionsSection = () => {
                     }}
                   >
                     <Link
+                      prefetch
                       href={`/users/${item.user.id}`}
                       className="flex items-center gap-4"
                     >
@@ -86,7 +87,11 @@ export const SubscriptionsSection = () => {
                 isActive={pathname === "/subscriptions"}
                 asChild
               >
-                <Link href="/subscriptions" className="flex items-center gap-4">
+                <Link
+                  prefetch
+                  href="/subscriptions"
+                  className="flex items-center gap-4"
+                >
                   <ListIcon className="size-4" />
                   <span className="text-sm">All subscriptions</span>
                 </Link>

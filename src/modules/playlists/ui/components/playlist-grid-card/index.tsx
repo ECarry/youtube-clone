@@ -22,7 +22,7 @@ export const PlaylistGridCardSkeleton = () => {
 
 export const PlaylistGridCard = ({ playlist }: Props) => {
   return (
-    <Link href={`/playlists/${playlist.id}`}>
+    <Link prefetch href={`/playlists/${playlist.id}`}>
       <div className="flex flex-col gap-2 w-full group">
         <PlaylistThumbnail
           title={playlist.name}

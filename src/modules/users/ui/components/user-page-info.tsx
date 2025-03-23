@@ -78,7 +78,9 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
             className="w-full mt-3 rounded-full"
             asChild
           >
-            <Link href="/studio">Go to studio</Link>
+            <Link prefetch href="/studio">
+              Go to studio
+            </Link>
           </Button>
         ) : (
           <SubscriptionButton
@@ -110,7 +112,9 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
           </div>
           {mounted && userId === user.id ? (
             <Button variant="secondary" className="mt-3 rounded-full" asChild>
-              <Link href="/studio">Go to studio</Link>
+              <Link prefetch href="/studio">
+                Go to studio
+              </Link>
             </Button>
           ) : (
             <SubscriptionButton
